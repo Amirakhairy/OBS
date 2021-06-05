@@ -1,0 +1,37 @@
+
+1)
+SELECT EmpId
+FROM EmployeeDetails
+WHERE EmpId NOT IN
+    (SELECT EmpId
+     FROM VacationRequests v
+where (YEAR(v.StartDate) = 2021 or YEAR(v.EndDate) = 2021)); 
+
+
+2)
+SELECT e.FullName,COUNT(v.EmpId) VacationsCount
+FROM EmployeeDetails e
+Left JOIN  VacationRequests v ON e.EmpId= v.EmpId
+group by v.EmpId, e.FullName
+
+3)
+SELECT e.fullname,COUNT(v.EmpId) RejectedVacations
+FROM EmployeeDetails e
+INNER JOIN VacationRequests  v ON e.EmpId= v.EmpId
+INNER JOIN EmployeeBalance b ON e.EmpId= b.EmpId
+where v.RequestStatus = 'rejected' and b.department = 'D1'
+group by v.EmpId, e.FullName
+
+
+4)
+Select EmpId, FullName,
+(select Balance From EmployeeBalance where VacationType = 'Casual' and EmpId = e.EmpId) Casual,
+(select Balance From EmployeeBalance where VacationType = 'Annual' and EmpId = e.EmpId) Annual
+from EmployeeDetails e
+
+
+5)
+select top(3) e.EmpId, e.FullName, IsNULL(Balance,0) Balance, VacationType
+from EmployeeDetails e
+left join EmployeeBalance b on b.EmpId = e.EmpId and b.VacationType = 'Annual'
+order by b.Balance desc
